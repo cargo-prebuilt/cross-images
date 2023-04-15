@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export CARGO='/rust/bin/cargo'
+cargo-auditable auditable "$@"
