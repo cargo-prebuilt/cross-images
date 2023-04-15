@@ -86,6 +86,6 @@ jobs:
             tech.harmless.cargo-prebuilt.build_date="${{ env.BUILD_DATE }}"
             org.opencontainers.image.authors="cross-rs, harmless-tech, cargo-prebuilt"
           build-args: |
-            TARGET=
+            TARGET=${{ matrix.target }}
           platforms: linux/amd64
           builder: ${{ steps.buildx.outputs.name }}
