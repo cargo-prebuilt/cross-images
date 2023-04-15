@@ -3,10 +3,10 @@ name: Build cross auditable images
 on:
   push:
     branches: [ main ]
-    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/** ]
+    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/Dockerfile ]
   pull_request:
     branches: [ main ]
-    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/** ]
+    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/Dockerfile ]
   workflow_dispatch:
   schedule:
     - cron: '0 3 * * 5'
