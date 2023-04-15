@@ -1,0 +1,91 @@
+name: Build cross auditable images
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/** ]
+  pull_request:
+    branches: [ main ]
+    paths: [ .github/workflows/cross-auditable.yml, cross-auditable/** ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 5'
+
+jobs:
+  cross-auditable:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+          - target: x86_64-unknown-linux-musl
+          - target: aarch64-unknown-linux-gnu
+          - target: aarch64-unknown-linux-musl
+          - target: x86_64-unknown-freebsd
+          - target: x86_64-unknown-netbsd
+          - target: x86_64-unknown-illumos
+          - target: x86_64-sun-solaris
+          - target: riscv64gc-unknown-linux-gnu
+          - target: powerpc64-unknown-linux-gnu
+          - target: powerpc64le-unknown-linux-gnu
+          - target: s390x-unknown-linux-gnu
+          - target: mips64-unknown-linux-gnuabi64
+          - target: mips64-unknown-linux-muslabi64
+          - target: mips64el-unknown-linux-gnuabi64
+          - target: mips64el-unknown-linux-muslabi64
+          - target: i686-unknown-linux-gnu
+          - target: i686-unknown-linux-musl
+          - target: i686-unknown-freebsd
+          - target: armv7-unknown-linux-gnueabihf
+          - target: armv7-unknown-linux-musleabihf
+          - target: powerpc-unknown-linux-gnu
+          - target: mips-unknown-linux-gnu
+          - target: mips-unknown-linux-musl
+          - target: mipsel-unknown-linux-gnu
+          - target: mipsel-unknown-linux-musl
+          - target: x86_64-pc-windows-gnu
+          - target: i686-pc-windows-gnu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Docker Setup Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Docker Login
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download cargo-auditable
+        uses: cargo-prebuilt/cargo-prebuilt-action@v1
+        with:
+          tools: cargo-auditable
+          tools-target: x86_64-unknown-linux-musl
+          tools-path: ${{ github.workspace }}/cross-auditable/resources
+      - name: Vars
+        run: |
+          echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: ./cross-auditable
+          file: ./cross-auditable/Dockerfile
+          pull: true
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/cargo-prebuilt/cross-auditable:${{ matrix.target }}
+          labels: |
+            tech.harmless.cargo-prebuilt.name="cross-auditable"
+            tech.harmless.cargo-prebuilt.target="${{ matrix.target }}"
+            tech.harmless.cargo-prebuilt.pull_request_build="${{ github.event_name == 'pull_request' }}"
+            tech.harmless.cargo-prebuilt.run_number="${{ github.run_number }}"
+            tech.harmless.cargo-prebuilt.repo="${{ github.repositoryUrl }}"
+            tech.harmless.cargo-prebuilt.build_date="${{ env.BUILD_DATE }}"
+            org.opencontainers.image.authors="cross-rs, harmless-tech, cargo-prebuilt"
+          build-args: |
+            TARGET=${{ matrix.target }}
+          platforms: linux/amd64
+          builder: ${{ steps.buildx.outputs.name }}
