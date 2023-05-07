@@ -3,7 +3,7 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET as builder
 ARG BUILD_COMBO
 
 RUN apt update && apt upgrade -y \
-    && DEBIAN_FRONTEND=noninteractive apt install -y checkinstall autopoint \
+    && DEBIAN_FRONTEND=noninteractive apt install -y checkinstall \
     && rm -rf /var/lib/apt/lists/*
 
 COPY openssl /openssl
@@ -20,8 +20,8 @@ RUN /bin/bash -c "mv openssl*.deb openssl.deb"
 
 # pkg-config
 RUN dpkg-deb -R openssl.deb deb-extracted/
-# RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/lib/libssl.pc deb-extracted/usr/local/ssl/lib/pkgconfig/lib/openssl.pc
-# RUN mkdir -p deb-extracted/usr/local/lib/pkgconfig
-# RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/lib/* deb-extracted/deb-extracted/usr/local/lib/pkgconfig
-# RUN dpkg-deb -b deb-extracted
-# RUN mv deb-extracted.deb openssl.deb
+RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/libssl.pc deb-extracted/usr/local/ssl/lib/pkgconfig/openssl.pc
+RUN mkdir -p deb-extracted/usr/local/lib/pkgconfig
+RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/* deb-extracted/usr/local/lib/pkgconfig/
+RUN dpkg-deb -b deb-extracted
+RUN mv deb-extracted.deb openssl.deb
