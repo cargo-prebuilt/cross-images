@@ -79,6 +79,23 @@ jobs:
           export OSSL_DIR="$(ls)"
           rsync -a "$OSSL_DIR/" .
           rm -rf "$OSSL_DIR"
+      - name: Build openssl
+        uses: docker/build-push-action@v4
+        with:
+          context: ./cross-openssl
+          file: ./cross-openssl/Dockerfile.openssl
+          pull: true
+          push: false
+          load: true
+          tags: openssl-built-deb
+          build-args: |
+            TARGET=${{ matrix.target }}
+            BUILD_COMBO=${{ matrix.build_combo }}
+          platforms: linux/amd64
+          builder: ${{ steps.buildx.outputs.name }}
+      - name: Extract openssl.deb
+        working-directory: ./cross-openssl
+        run: docker run -it --rm --pull=never --mount type=bind,src="$(pwd)",dst=/openssl-deb openssl-built-deb cp /openssl/openssl*.deb /openssl-deb/openssl.deb
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
@@ -86,7 +103,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./cross-openssl
-          file: ./cross-openssl/Dockerfile.${{ matrix.target }}
+          file: ./cross-openssl/Dockerfile
           pull: true
           push: ${{ github.event_name != 'pull_request' }}
           tags: ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}
