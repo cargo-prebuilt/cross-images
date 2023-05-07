@@ -11,25 +11,15 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Fix for BSD platforms
+# TODO: Own script!!!
 RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
     && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
     && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
 # Fix for solaris
 ENV TEST=solaris
-RUN echo '#!/bin/bash' > /filelibnsl.sh \
-    && echo 'if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then' > /filelibnsl.sh \
-    && echo 'mkdir /nsl && cd /nsl' > /filelibnsl.sh \
-    && echo '&& curl -fsSL https://github.com/thkukuk/libnsl/archive/refs/tags/v2.0.0.tar.gz -o libnsl.tar.gz' > /filelibnsl.sh \
-    && echo '&& tar -xzvf libnsl.tar.gz' > /filelibnsl.sh \
-    && echo '&& rm -f libnsl.tar.gz' > /filelibnsl.sh \
-    && echo '&& cd "$(ls)"' > /filelibnsl.sh \
-    && echo '&& ./configure CC="$CC_x86_64_sun_solaris" CXX="$CXX_x86_64_sun_solaris"' > /filelibnsl.sh \
-    && echo '&& make' > /filelibnsl.sh \
-    && echo '&& make install' > /filelibnsl.sh \
-    && echo 'else echo "False" ; fi' > /filelibnsl.sh \
-    && chmod +x /filelibnsl.sh \
-    && /filelibnsl.sh
+COPY solaris.sh /solaris.sh
+RUN /solaris.sh
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
