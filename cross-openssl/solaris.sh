@@ -6,6 +6,7 @@ if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then
     && tar -xzvf libnsl.tar.gz \
     && rm -f libnsl.tar.gz \
     && cd "$(ls)" \
+    && ./autogen.sh \
     && ./configure CC="$CC_x86_64_sun_solaris" CXX="$CXX_x86_64_sun_solaris" \
     && make \
     && make install ;
