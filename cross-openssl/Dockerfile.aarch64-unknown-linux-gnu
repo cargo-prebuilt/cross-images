@@ -6,7 +6,7 @@ RUN apt update && apt upgrade -y \
     && apt install -y checkinstall \
     && rm -rf /var/lib/apt/lists/*
 
-COPY openssl /
+COPY openssl /openssl
 
 WORKDIR /openssl
 
