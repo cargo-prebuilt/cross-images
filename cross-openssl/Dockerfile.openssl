@@ -3,7 +3,7 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET as builder
 ARG BUILD_COMBO
 
 RUN apt update && apt upgrade -y \
-    && apt install -y checkinstall \
+    && DEBIAN_FRONTEND=noninteractive apt install -y checkinstall autopoint \
     && rm -rf /var/lib/apt/lists/*
 
 COPY openssl /openssl
@@ -11,10 +11,7 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Fix for BSD platforms
-# TODO: Own script!!!
-RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
-    && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
-    && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
+COPY bsd.sh /usr/local/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
 # Fix for solaris
 ENV TEST=solaris
