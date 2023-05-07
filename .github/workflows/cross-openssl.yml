@@ -69,7 +69,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
-        run: echo "LATEST_OPENSSL=$(openssl % gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
+        run: echo "LATEST_OPENSSL=$(gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
       - name: Cache
         uses: actions/cache@v3
         id: cache
@@ -82,8 +82,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
-        run: |
-          gh release download ${{ env.LATEST_OPENSSL }} -R openssl/openssl --archive=tar.gz --output openssl.tar.gz
+        run: gh release download ${{ env.LATEST_OPENSSL }} -R openssl/openssl --archive=tar.gz --output openssl.tar.gz
       - name: Move openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
@@ -124,7 +123,7 @@ jobs:
           context: ./cross-openssl
           file: ./cross-openssl/Dockerfile
           pull: true
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true #${{ github.event_name != 'pull_request' }}
           tags: ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}
           labels: |
             tech.harmless.cargo-prebuilt.name="cross-openssl"
