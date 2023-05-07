@@ -14,9 +14,9 @@ WORKDIR /openssl
 COPY bsd.sh /usr/local/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
 # Fix for solaris
-ENV TEST=solaris
-COPY solaris.sh /solaris.sh
-RUN /solaris.sh
+# ENV TEST=solaris
+# COPY solaris.sh /solaris.sh
+# RUN /solaris.sh
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make

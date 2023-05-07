@@ -31,8 +31,6 @@ jobs:
             build_combo: BSD-x86_64
           - target: x86_64-unknown-illumos
             build_combo: solaris64-x86_64-gcc
-          - target: x86_64-sun-solaris
-            build_combo: solaris64-x86_64-gcc
           - target: riscv64gc-unknown-linux-gnu
             build_combo: linux64-riscv64
           - target: powerpc64-unknown-linux-gnu
@@ -156,6 +154,7 @@ jobs:
           file: ./cross-openssl/Dockerfile
           pull: true
           push: ${{ github.event_name != 'pull_request' }}
+          load: true #TODO: Remove!
           tags: ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}
           labels: |
             tech.harmless.cargo-prebuilt.name="cross-openssl"
@@ -171,3 +170,15 @@ jobs:
             BUILD_COMBO=${{ matrix.build_combo }}
           platforms: linux/amd64
           builder: ${{ steps.buildx.outputs.name }}
+      #TODO: Remove!
+      - name: Install cargo-prebuilt
+        uses: cargo-prebuilt/cargo-prebuilt-action@v1
+        with:
+          tools: cross
+      - name: REMOVE!
+        run: |
+          git clone https://github.com/cargo-prebuilt/cargo-prebuilt.git
+          cd cargo-prebuilt
+          echo '[target.${{ matrix.target }}]' >> Cross.toml
+          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
+          cross build --no-default-features --features native,indexes --release --verbose --target ${{ matrix.target }}
