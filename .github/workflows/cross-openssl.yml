@@ -18,9 +18,13 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
+            build_combo: linux-x86_64
           - target: x86_64-unknown-linux-musl
+            build_combo: linux-x86_64
           - target: aarch64-unknown-linux-gnu
+            build_combo: linux-aarch64
           - target: aarch64-unknown-linux-musl
+            build_combo: linux-aarch64
           - target: x86_64-unknown-freebsd
           - target: x86_64-unknown-netbsd
           - target: x86_64-unknown-illumos
@@ -96,5 +100,6 @@ jobs:
             org.opencontainers.image.authors="cross-rs, harmless-tech, cargo-prebuilt"
           build-args: |
             TARGET=${{ matrix.target }}
+            BUILD_COMBO=${{ matrix.build_combo }}
           platforms: linux/amd64
           builder: ${{ steps.buildx.outputs.name }}

@@ -1,6 +1,22 @@
-FROM ghcr.io/cargo-prebuilt/cross-auditable:aarch64-unknown-linux-gnu
+ARG TARGET
+FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET as builder
+ARG BUILD_COMBO
 
-RUN dpkg --add-architecture arm64
 RUN apt update && apt upgrade -y \
-    && apt install -y libssl-dev:arm64 \
+    && apt install -y checkinstall \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY openssl /
+
+WORKDIR /openssl
+
+RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
+RUN make
+RUN checkinstall
+
+RUN ls
+
+FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET
+
+RUN apt update && apt upgrade -y \
     && rm -rf /var/lib/apt/lists/*
