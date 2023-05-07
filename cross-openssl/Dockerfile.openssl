@@ -18,7 +18,7 @@ COPY bsd.sh /usr/local/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 # COPY solaris.sh /solaris.sh
 # RUN /solaris.sh
 
-RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
+RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX #--prefix=/usr/local/openssl --openssldir=/usr/local/openssl
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 RUN /bin/bash -c "mv openssl*.deb openssl.deb"
