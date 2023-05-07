@@ -75,13 +75,11 @@ jobs:
           export OSSL_DIR="$(ls)"
           rsync -a "$OSSL_DIR/" .
           rm -rf "$OSSL_DIR"
-          ls
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
       - name: Build and push Docker images
         uses: docker/build-push-action@v4
-        if: false
         with:
           context: ./cross-openssl
           file: ./cross-openssl/Dockerfile.${{ matrix.target }}
