@@ -30,7 +30,7 @@ jobs:
           - target: x86_64-unknown-netbsd
             build_combo: BSD-x86_64
           - target: x86_64-unknown-illumos
-            build_combo: BSD-x86_64
+            build_combo: solaris64-x86_64-gcc
           - target: x86_64-sun-solaris
             build_combo: solaris64-x86_64-gcc
           - target: riscv64gc-unknown-linux-gnu
