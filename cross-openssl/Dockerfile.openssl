@@ -17,16 +17,19 @@ RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
 
 # Fix for solaris
 ENV TEST=solaris
-RUN bash -c 'if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then \
-    mkdir /nsl && cd /nsl \
-    && curl -fsSL https://github.com/thkukuk/libnsl/archive/refs/tags/v2.0.0.tar.gz -o libnsl.tar.gz \
-    && tar -xzvf libnsl.tar.gz \
-    && rm -f libnsl.tar.gz \
-    && cd "$(ls)" \
-    && ./configure CC="$CC_x86_64_sun_solaris" CXX="$CXX_x86_64_sun_solaris" \
-    && make \
-    && make install ; \
-    else echo "False" ; fi'
+RUN echo '#!/bin/bash' > /filelibnsl.sh \
+    && echo 'if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then' > /filelibnsl.sh \
+    && echo 'mkdir /nsl && cd /nsl' > /filelibnsl.sh \
+    && echo '&& curl -fsSL https://github.com/thkukuk/libnsl/archive/refs/tags/v2.0.0.tar.gz -o libnsl.tar.gz' > /filelibnsl.sh \
+    && echo '&& tar -xzvf libnsl.tar.gz' > /filelibnsl.sh \
+    && echo '&& rm -f libnsl.tar.gz' > /filelibnsl.sh \
+    && echo '&& cd "$(ls)"' > /filelibnsl.sh \
+    && echo '&& ./configure CC="$CC_x86_64_sun_solaris" CXX="$CXX_x86_64_sun_solaris"' > /filelibnsl.sh \
+    && echo '&& make' > /filelibnsl.sh \
+    && echo '&& make install' > /filelibnsl.sh \
+    && echo 'else echo "False" ; fi' > /filelibnsl.sh \
+    && chmod +x /filelibnsl.sh \
+    && /filelibnsl.sh
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
