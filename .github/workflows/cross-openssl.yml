@@ -74,7 +74,7 @@ jobs:
           cd openssl
           export OSSL_DIR="$(ls)"
           rsync -a "$OSSL_DIR/" .
-          rm -rf $OSSL_DIR
+          rm -rf "$OSSL_DIR"
           ls
       - name: Vars
         run: |
