@@ -13,4 +13,4 @@ WORKDIR /openssl
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
-RUN /bin/bash mv openssl*.deb openssl.deb
+RUN /bin/bash -c "mv openssl*.deb openssl.deb"
