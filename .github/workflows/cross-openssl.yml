@@ -133,22 +133,12 @@ jobs:
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
         run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/openssl-deb openssl-built-deb cp /openssl/openssl.deb /openssl-deb/openssl.deb
-      - name: Dup openssl.deb
-        run: cp cross-openssl/openssl.deb ${{ env.LATEST_OPENSSL }}-${{ matrix.target }}_amd64.deb
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
           name: openssl-${{ matrix.target }}
           path: |
-            ${{ env.LATEST_OPENSSL }}-${{ matrix.target }}_amd64.deb
-      - name: Push openssl deb to release
-        if: ${{ !steps.cache.outputs.cache-hit && github.event_name != 'pull_request' }}
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.LATEST_OPENSSL }}
-          name: ${{ env.LATEST_OPENSSL }}
-          allowUpdates: true
-          artifacts: "${{ env.LATEST_OPENSSL }}-${{ matrix.target }}_amd64.deb"
+            cross-openssl/openssl.deb
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV

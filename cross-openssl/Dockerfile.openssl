@@ -13,12 +13,15 @@ WORKDIR /openssl
 # Fix for BSD platforms
 COPY bsd.sh /usr/local/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
-# Fix for solaris
-# ENV TEST=solaris
-# COPY solaris.sh /solaris.sh
-# RUN /solaris.sh
-
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX #--prefix=/usr/local/openssl --openssldir=/usr/local/openssl
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 RUN /bin/bash -c "mv openssl*.deb openssl.deb"
+
+# pkg-config
+RUN dpkg-deb -R openssl.deb deb-extracted/
+RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/lib/libssl.pc deb-extracted/usr/local/ssl/lib/pkgconfig/lib/openssl.pc
+RUN mkdir -p deb-extracted/usr/local/lib/pkgconfig
+RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/lib/* deb-extracted/deb-extracted/usr/local/lib/pkgconfig
+RUN dpkg-deb -b deb-extracted
+RUN mv deb-extracted.deb openssl.deb
