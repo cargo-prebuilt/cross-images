@@ -11,7 +11,7 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
-    && echo "$CROSS_TOOLCHAIN_PREFIX"gcc > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+    && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
     && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
