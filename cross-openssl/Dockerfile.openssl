@@ -17,7 +17,7 @@ RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
 
 # Fix for solaris
 ENV TEST=solaris
-RUN if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then \
+RUN bash -c 'if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then \
     mkdir /nsl && cd /nsl \
     && curl -fsSL https://github.com/thkukuk/libnsl/archive/refs/tags/v2.0.0.tar.gz -o libnsl.tar.gz \
     && tar -xzvf libnsl.tar.gz \
@@ -26,7 +26,7 @@ RUN if [[ $CROSS_TOOLCHAIN_PREFIX =~ $TEST ]] ; then \
     && ./configure CC="$CC_x86_64_sun_solaris" CXX="$CXX_x86_64_sun_solaris" \
     && make \
     && make install ; \
-    else echo "False" ; fi
+    else echo "False" ; fi'
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
