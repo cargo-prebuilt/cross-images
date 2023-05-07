@@ -9,7 +9,7 @@ on:
     paths: [ .github/workflows/cross-auditable.yml, cross-auditable/Dockerfile ]
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * 5'
+    - cron: '0 3 * * 6'
 
 jobs:
   cross-auditable:
