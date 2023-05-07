@@ -112,7 +112,7 @@ jobs:
       - name: Extract openssl.deb
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
-        run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/openssl-deb openssl-built-deb cp /openssl/openssl*.deb /openssl-deb/openssl.deb
+        run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/openssl-deb openssl-built-deb cp /openssl/openssl.deb /openssl-deb/openssl.deb
 
 
       - name: Vars
