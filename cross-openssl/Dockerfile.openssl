@@ -10,7 +10,7 @@ COPY openssl /openssl
 
 WORKDIR /openssl
 
-RUN echo -e "#\!/bin/sh\n$CROSS_TOOLCHAIN_PREFIXgcc" > ./"$CROSS_TOOLCHAIN_PREFIXcc" && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIXcc"
+RUN echo -e "#\!/bin/sh\n$CROSS_TOOLCHAIN_PREFIXgcc" > /usr/bin/"$CROSS_TOOLCHAIN_PREFIXcc" && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIXcc"
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
