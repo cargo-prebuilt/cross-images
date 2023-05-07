@@ -2,5 +2,5 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:i686-unknown-linux-gnu
 
 RUN dpkg --add-architecture i383
 RUN apt update && apt upgrade -y \
-    && apt install -y libssl-dev:i383
+    && apt install -y libssl-dev:i383 \
     && rm -rf /var/lib/apt/lists/*

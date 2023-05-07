@@ -2,5 +2,5 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:s390x-unknown-linux-gnu
 
 RUN dpkg --add-architecture s390x
 RUN apt update && apt upgrade -y \
-    && apt install -y libssl-dev:s390x
+    && apt install -y libssl-dev:s390x \
     && rm -rf /var/lib/apt/lists/*
