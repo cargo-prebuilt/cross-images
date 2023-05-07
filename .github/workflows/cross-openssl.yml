@@ -9,7 +9,7 @@ on:
     paths: [ .github/workflows/cross-openssl.yml, cross-openssl/** ]
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * 7'
+    - cron: '0 3 * * 0'
 
 jobs:
   cross-openssl:
