@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG TARGET
 FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET as builder
 ARG BUILD_COMBO
@@ -11,23 +12,38 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Fix for BSD platforms
-RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
-    && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
-    && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
+RUN <<EOT bash
+    if [[ ! -z "$CROSS_TOOLCHAIN_PREFIX" ]] ; then
+        echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
+        && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+        && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+        && echo "True" ;
+    else echo "False" ; fi
+EOT
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 
+# Repack deb
 WORKDIR /openssldeb
 
 RUN /bin/bash -c "mv /openssl/openssl*.deb openssl.deb"
 
-# pkg-config
 RUN dpkg-deb -R openssl.deb deb-openssl/
-RUN ls deb-openssl/usr/local/ssl
-RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/libssl.pc deb-openssl/usr/local/ssl/lib64/pkgconfig/openssl.pc
-RUN mkdir -p deb-openssl/usr/local/lib/pkgconfig
-RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
+
+RUN ls deb-openssl/usr/local/ssl    #TODO Remove!
+
+# openssl headers
+RUN cp -r /usr/local/ssl/include deb-openssl/usr/local/ssl/include
+
+# pkg-config
+RUN <<EOT bash
+    export DIR="$(ls -d deb-openssl/usr/local/ssl/lib*/)"
+    cp "$DIR"pkgconfig/libssl.pc "$DIR"pkgconfig/openssl.pc
+    mkdir -p deb-openssl/usr/local/lib/pkgconfig
+    cp "$DIR"pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
+EOT
+
 RUN dpkg-deb -b deb-openssl
 RUN mv deb-openssl.deb openssl.deb
