@@ -11,17 +11,22 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Fix for BSD platforms
-COPY bsd.sh /usr/local/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
+RUN echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
+    && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+    && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
-RUN /bin/bash -c "mv openssl*.deb openssl.deb"
+
+WORKDIR /openssldeb
+
+RUN /bin/bash -c "mv /openssl/openssl*.deb openssl.deb"
 
 # pkg-config
-RUN dpkg-deb -R openssl.deb deb-extracted/
-RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/libssl.pc deb-extracted/usr/local/ssl/lib/pkgconfig/openssl.pc
-RUN mkdir -p deb-extracted/usr/local/lib/pkgconfig
-RUN cp deb-extracted/usr/local/ssl/lib/pkgconfig/* deb-extracted/usr/local/lib/pkgconfig/
-RUN dpkg-deb -b deb-extracted
-RUN mv deb-extracted.deb openssl.deb
+RUN dpkg-deb -R openssl.deb deb-openssl/
+RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/libssl.pc deb-openssl/usr/local/ssl/lib64/pkgconfig/openssl.pc
+RUN mkdir -p deb-openssl/usr/local/lib/pkgconfig
+RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
+RUN dpkg-deb -b deb-openssl
+RUN mv deb-openssl.deb openssl.deb
