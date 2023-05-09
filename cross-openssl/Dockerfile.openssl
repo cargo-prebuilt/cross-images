@@ -39,10 +39,9 @@ RUN cp -r /usr/local/ssl/include deb-openssl/usr/local/ssl/include
 
 # pkg-config
 RUN <<EOT bash
-    export DIR="$(ls -d deb-openssl/usr/local/ssl/lib*/)"
-    cp "$DIR"pkgconfig/libssl.pc "$DIR"pkgconfig/openssl.pc
+    DIR="$(ls -d deb-openssl/usr/local/ssl/lib*/)" cp "$DIR"pkgconfig/libssl.pc "$DIR"pkgconfig/openssl.pc
     mkdir -p deb-openssl/usr/local/lib/pkgconfig
-    cp "$DIR"pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
+    DIR="$(ls -d deb-openssl/usr/local/ssl/lib*/)" cp "$DIR"pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
 EOT
 
 RUN dpkg-deb -b deb-openssl
