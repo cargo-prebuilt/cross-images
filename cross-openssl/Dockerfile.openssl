@@ -25,6 +25,7 @@ RUN /bin/bash -c "mv /openssl/openssl*.deb openssl.deb"
 
 # pkg-config
 RUN dpkg-deb -R openssl.deb deb-openssl/
+RUN ls deb-openssl/usr/local/ssl
 RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/libssl.pc deb-openssl/usr/local/ssl/lib64/pkgconfig/openssl.pc
 RUN mkdir -p deb-openssl/usr/local/lib/pkgconfig
 RUN cp deb-openssl/usr/local/ssl/lib64/pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
