@@ -21,8 +21,9 @@ RUN <<EOT bash
     else echo "False" ; fi
 EOT
 
-RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl --lib-dir=lib \
-    --no-dso --no-shared --no-ssl3 --no-tests --no-comp
+RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl \
+    --libdir=lib no-dso no-shared no-ssl3 no-tests no-comp \
+    no-legacy no-camellia no-idea no-seed
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 
