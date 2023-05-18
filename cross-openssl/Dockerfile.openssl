@@ -22,9 +22,7 @@ RUN <<EOT bash
 EOT
 
 RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl --lib-dir=lib \
-    --no-dso --no-shared --no-ssl3 --no-tests --no-comp --no-zlib --no-zlib-dynamic \
-    --no-md2 --no-rc5 --no-weak-ssl-ciphers \
-    --no-camellia --no-idea --no-seed
+    --no-dso --no-shared --no-ssl3 --no-tests --no-comp
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 
