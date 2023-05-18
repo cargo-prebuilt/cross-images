@@ -21,7 +21,10 @@ RUN <<EOT bash
     else echo "False" ; fi
 EOT
 
-RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
+RUN ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX --prefix=/usr/local/ssl --openssldir=/usr/local/ssl --lib-dir=lib \
+    --no-dso --no-shared --no-ssl3 --no-tests --no-comp --no-zlib --no-zlib-dynamic \
+    --no-md2 --no-rc5 --no-weak-ssl-ciphers \
+    --no-camellia --no-idea --no-seed
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
 
@@ -39,9 +42,9 @@ RUN cp -r /usr/local/ssl/include deb-openssl/usr/local/ssl/include
 
 # pkg-config
 RUN <<EOT bash
-    cp "$(ls -d deb-openssl/usr/local/ssl/lib*/)"pkgconfig/libssl.pc "$(ls -d deb-openssl/usr/local/ssl/lib*/)"pkgconfig/openssl.pc
+    cp deb-openssl/usr/local/ssl/lib/pkgconfig/libssl.pc deb-openssl/usr/local/ssl/lib/pkgconfig/openssl.pc
     mkdir -p deb-openssl/usr/local/lib/pkgconfig
-    cp "$(ls -d deb-openssl/usr/local/ssl/lib*/)"pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
+    cp deb-openssl/usr/local/ssl/lib/pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
 EOT
 
 RUN dpkg-deb -b deb-openssl
