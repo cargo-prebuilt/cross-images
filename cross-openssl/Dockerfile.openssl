@@ -26,17 +26,19 @@ EOT
 RUN <<EOT bash
     case "$TARGET" in
       *musl*)
-        ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
+        AR="$CROSS_TOOLCHAIN_PREFIX"ar CC="$CROSS_TOOLCHAIN_PREFIX"cc ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
         --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
         no-dso no-shared no-ssl3 no-tests no-comp \
         no-legacy no-camellia no-idea no-seed \
-        no-engine no-async -static
+        no-engine no-async \
+        && echo 'Musl Target'
         ;;
       *)
         ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
         --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
         no-dso no-shared no-ssl3 no-tests no-comp \
-        no-legacy no-camellia no-idea no-seed
+        no-legacy no-camellia no-idea no-seed \
+        && echo 'Normal Target'
         ;;
  esac
 EOT
