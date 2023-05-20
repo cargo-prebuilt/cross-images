@@ -86,21 +86,28 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get OpenSSL version
+      - name: Get latest openssl
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
-        run: echo 'OPENSSL_VERSION=3.0.8' >> $GITHUB_ENV
+        run: echo "LATEST_OPENSSL=$(gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
       - name: Cache
         uses: actions/cache@v3
         id: cache
         with:
           path: |
             cross-openssl/openssl.deb
-          key: ${{ matrix.target }}-${{ env.OPENSSL_VERSION }}-${{ secrets.CACHE_BUST }}
-      - name: Setup OpenSSL
+          key: ${{ matrix.target }}-${{ env.LATEST_OPENSSL }}-${{ secrets.CACHE_BUST }}
+      - name: Download openssl
+        if: ${{ !steps.cache.outputs.cache-hit }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./cross-openssl
+        run: gh release download ${{ env.LATEST_OPENSSL }} -R openssl/openssl --archive=tar.gz --output openssl.tar.gz
+      - name: Move openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
         run: |
-          curl -fsSL https://www.openssl.org/source/openssl-3.0.8.tar.gz -o openssl.tar.gz
           mkdir openssl
           tar -xzvf openssl.tar.gz -C openssl
           cd openssl
@@ -147,7 +154,7 @@ jobs:
           labels: |
             tech.harmless.cargo-prebuilt.name="cross-openssl"
             tech.harmless.cargo-prebuilt.target="${{ matrix.target }}"
-            tech.harmless.cargo-prebuilt.openssl="${{ env.OPENSSL_VERSION }}"
+            tech.harmless.cargo-prebuilt.openssl="${{ env.LATEST_OPENSSL }}"
             tech.harmless.cargo-prebuilt.pull_request_build="${{ github.event_name == 'pull_request' }}"
             tech.harmless.cargo-prebuilt.run_number="${{ github.run_number }}"
             tech.harmless.cargo-prebuilt.repo="${{ github.repositoryUrl }}"
