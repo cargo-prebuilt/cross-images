@@ -26,7 +26,7 @@ EOT
 RUN <<EOT bash
     case "$TARGET" in
       *musl*)
-        AR="$CROSS_TOOLCHAIN_PREFIX"ar CC="$CROSS_TOOLCHAIN_PREFIX"cc ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
+        AR="$CROSS_TOOLCHAIN_PREFIX"ar CC="$CROSS_TOOLCHAIN_PREFIX"cc ./Configure $BUILD_COMBO \
         --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
         no-dso no-shared no-ssl3 no-tests no-comp \
         no-legacy no-camellia no-idea no-seed \
