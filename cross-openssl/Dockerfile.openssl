@@ -36,14 +36,10 @@ RUN /bin/bash -c "mv /openssl/openssl*.deb openssl.deb"
 RUN dpkg-deb -R openssl.deb deb-openssl/
 
 # openssl headers
-# RUN cp -r /usr/local/ssl/include deb-openssl/usr/local/ssl/include
+RUN cp -r /usr/local/include/openssl deb-openssl/usr/local/include/openssl
 
 # pkg-config
-# RUN <<EOT bash
-#     cp deb-openssl/usr/local/ssl/lib/pkgconfig/libssl.pc deb-openssl/usr/local/ssl/lib/pkgconfig/openssl.pc
-#     mkdir -p deb-openssl/usr/local/lib/pkgconfig
-#     cp deb-openssl/usr/local/ssl/lib/pkgconfig/* deb-openssl/usr/local/lib/pkgconfig/
-# EOT
+RUN cp -r /usr/local/lib/pkgconfig/openssl.pc deb-openssl/usr/local/lib/pkgconfig/openssl.pc
 
 RUN dpkg-deb -b deb-openssl
 RUN mv deb-openssl.deb openssl.deb
