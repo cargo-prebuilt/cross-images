@@ -8,7 +8,7 @@ ENV OPENSSL_LIB_DIR=$CROSS_SYSROOT/lib
 
 SHELL ["/bin/bash", "-c"]
 
-RUN --mount=type=bind,source=openssl,target=/openssl <<EOT
+RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
     cd /openssl
 
     if [ ! -f "Makefile" ]; then
