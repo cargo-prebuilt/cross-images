@@ -13,11 +13,23 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Build and Install
-RUN CC="$CROSS_TOOLCHAIN_PREFIX"gcc AR="$CROSS_TOOLCHAIN_PREFIX"ar ./Configure $BUILD_COMBO \
+RUN <<EOT
+    export CC="$CROSS_TOOLCHAIN_PREFIX"gcc 
+    export AR="$CROSS_TOOLCHAIN_PREFIX"ar
+
+    case "$string" in 
+    *bsd*)
+        export CC=gcc 
+        export AR=ar
+        ;;
+    esac
+
+    ./Configure $BUILD_COMBO \
         --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
         --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
         no-dso no-shared no-ssl3 no-tests no-comp \
         no-legacy no-camellia no-idea no-seed
+EOT
 RUN make "-j$(nproc)"
 RUN checkinstall -D -y --pkgname=openssl
 
