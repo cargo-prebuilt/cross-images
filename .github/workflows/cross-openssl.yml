@@ -90,20 +90,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
-        run: echo "LATEST_OPENSSL=$(gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
+        run: echo "OPENSSL_VERSION=$(gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
       - name: Cache
         uses: actions/cache@v3
         id: cache
         with:
           path: |
             cross-openssl/openssl.deb
-          key: ${{ matrix.target }}-${{ env.LATEST_OPENSSL }}-${{ secrets.CACHE_BUST }}
+          key: ${{ matrix.target }}-${{ env.OPENSSL_VERSION }}-${{ secrets.CACHE_BUST }}
       - name: Download openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
-        run: gh release download ${{ env.LATEST_OPENSSL }} -R openssl/openssl --archive=tar.gz --output openssl.tar.gz
+        run: gh release download ${{ env.OPENSSL_VERSION }} -R openssl/openssl --archive=tar.gz --output openssl.tar.gz
       - name: Move openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
@@ -154,7 +154,7 @@ jobs:
           labels: |
             tech.harmless.cargo-prebuilt.name="cross-openssl"
             tech.harmless.cargo-prebuilt.target="${{ matrix.target }}"
-            tech.harmless.cargo-prebuilt.openssl="${{ env.LATEST_OPENSSL }}"
+            tech.harmless.cargo-prebuilt.openssl="${{ env.OPENSSL_VERSION }}"
             tech.harmless.cargo-prebuilt.pull_request_build="${{ github.event_name == 'pull_request' }}"
             tech.harmless.cargo-prebuilt.run_number="${{ github.run_number }}"
             tech.harmless.cargo-prebuilt.repo="${{ github.repositoryUrl }}"

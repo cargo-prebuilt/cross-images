@@ -24,23 +24,10 @@ EOT
 
 # Build and Install
 RUN <<EOT bash
-    case "$TARGET" in
-      *musl*)
-        AR="$CROSS_TOOLCHAIN_PREFIX"ar CC="$CROSS_TOOLCHAIN_PREFIX"cc ./Configure $BUILD_COMBO \
+    ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
         --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
         no-dso no-shared no-ssl3 no-tests no-comp \
-        no-legacy no-camellia no-idea no-seed \
-        no-engine no-async \
-        && echo 'Musl Target'
-        ;;
-      *)
-        ./Configure $BUILD_COMBO --cross-compile-prefix=$CROSS_TOOLCHAIN_PREFIX \
-        --libdir=lib --prefix=/usr/local --openssldir=/usr/local/ssl \
-        no-dso no-shared no-ssl3 no-tests no-comp \
-        no-legacy no-camellia no-idea no-seed \
-        && echo 'Normal Target'
-        ;;
- esac
+        no-legacy no-camellia no-idea no-seed
 EOT
 RUN make
 RUN checkinstall -D -y --pkgname=openssl
