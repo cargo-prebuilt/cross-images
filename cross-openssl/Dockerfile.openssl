@@ -13,14 +13,14 @@ COPY openssl /openssl
 WORKDIR /openssl
 
 # Fix for BSD platforms
-RUN <<EOT bash
-    if [[ ! -z "$CROSS_TOOLCHAIN_PREFIX" ]] ; then
-        echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
-        && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
-        && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
-        && echo "True" ;
-    else echo "False" ; fi
-EOT
+# RUN <<EOT bash
+#     if [[ ! -z "$CROSS_TOOLCHAIN_PREFIX" ]] ; then
+#         echo '#!/bin/sh' > "$CROSS_TOOLCHAIN_PREFIX"cc \
+#         && echo "$CROSS_TOOLCHAIN_PREFIX"gcc' "$@"' > /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+#         && chmod +x /usr/bin/"$CROSS_TOOLCHAIN_PREFIX"cc \
+#         && echo "True" ;
+#     else echo "False" ; fi
+# EOT
 
 # Build and Install
 RUN <<EOT bash
