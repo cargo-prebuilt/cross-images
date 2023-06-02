@@ -11,6 +11,8 @@ SHELL ["/bin/bash", "-c"]
 RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
     cd /openssl
 
+    ls
+
     if [ ! -f "Makefile" ]; then
         case "$CROSS_TOOLCHAIN_PREFIX" in
         *freebsd*)
