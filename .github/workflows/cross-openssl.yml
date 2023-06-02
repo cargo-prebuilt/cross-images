@@ -98,7 +98,7 @@ jobs:
         id: cache
         with:
           path: |
-            cross-openssl/openssl.deb
+            cross-openssl/openssl
           key: ${{ matrix.target }}-${{ env.OPENSSL_VERSION }}-${{ secrets.CACHE_BUST }}
       - name: Download openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
@@ -116,31 +116,31 @@ jobs:
           export OSSL_DIR="$(ls)"
           rsync -a "$OSSL_DIR/" .
           rm -rf "$OSSL_DIR"
-      - name: Build openssl
-        if: ${{ !steps.cache.outputs.cache-hit }}
-        uses: docker/build-push-action@v4
-        with:
-          context: ./cross-openssl
-          file: ./cross-openssl/Dockerfile.openssl
-          pull: true
-          push: false
-          load: true
-          tags: openssl-built-deb
-          build-args: |
-            TARGET=${{ matrix.target }}
-            BUILD_COMBO=${{ matrix.build_combo }}
-          platforms: linux/amd64
-          builder: ${{ steps.buildx.outputs.name }}
-      - name: Extract openssl.deb
-        if: ${{ !steps.cache.outputs.cache-hit }}
-        working-directory: ./cross-openssl
-        run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/extract openssl-built-deb cp /openssldeb/openssl.deb /extract/openssl.deb
-      - name: Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: openssl-${{ matrix.target }}
-          path: |
-            cross-openssl/openssl.deb
+      # - name: Build openssl
+      #   if: ${{ !steps.cache.outputs.cache-hit }}
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: ./cross-openssl
+      #     file: ./cross-openssl/Dockerfile.openssl
+      #     pull: true
+      #     push: false
+      #     load: true
+      #     tags: openssl-built-deb
+      #     build-args: |
+      #       TARGET=${{ matrix.target }}
+      #       BUILD_COMBO=${{ matrix.build_combo }}
+      #     platforms: linux/amd64
+      #     builder: ${{ steps.buildx.outputs.name }}
+      # - name: Extract openssl.deb
+      #   if: ${{ !steps.cache.outputs.cache-hit }}
+      #   working-directory: ./cross-openssl
+      #   run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/extract openssl-built-deb cp /openssldeb/openssl.deb /extract/openssl.deb
+      # - name: Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: openssl-${{ matrix.target }}
+      #     path: |
+      #       cross-openssl/openssl.deb
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
