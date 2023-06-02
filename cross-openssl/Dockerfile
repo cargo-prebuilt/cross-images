@@ -11,8 +11,6 @@ SHELL ["/bin/bash", "-c"]
 RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
     cd /openssl
 
-    ls
-
     if [ ! -f "Makefile" ]; then
         case "$CROSS_TOOLCHAIN_PREFIX" in
         *freebsd*)
@@ -25,8 +23,7 @@ RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
             CC="$CROSS_TOOLCHAIN_PREFIX"gcc AR="$CROSS_TOOLCHAIN_PREFIX"ar ./Configure $BUILD_COMBO \
                 --libdir=lib --prefix=$CROSS_SYSROOT --openssldir=$CROSS_SYSROOT/ssl \
                 no-dso no-shared no-ssl3 no-tests no-comp \
-                no-legacy no-camellia no-idea no-seed \
-                no-engine no-async
+                no-legacy no-camellia no-idea no-seed
             ;;
         esac
     fi
