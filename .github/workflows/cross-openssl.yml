@@ -103,7 +103,7 @@ jobs:
       - name: Download openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
-        run: curl --retry 3 -fsSL https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz -o openssl.tar.gz
+        run: curl --retry 3 -fsSL https://www.openssl.org/source/${{ env.OPENSSL_VERSION }}.tar.gz -o openssl.tar.gz
       - name: Move openssl
         if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
