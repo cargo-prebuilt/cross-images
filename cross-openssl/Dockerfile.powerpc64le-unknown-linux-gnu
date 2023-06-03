@@ -1,6 +1,0 @@
-FROM ghcr.io/cargo-prebuilt/cross-auditable:powerpc64le-unknown-linux-gnu
-
-RUN dpkg --add-architecture ppc64el
-RUN apt update && apt upgrade -y \
-    && apt install -y libssl-dev:ppc64el \
-    && rm -rf /var/lib/apt/lists/*

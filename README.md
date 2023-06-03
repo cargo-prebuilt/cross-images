@@ -47,6 +47,7 @@
 
 ### Changed
 
+- Use cargo-auditable image as base.
 - Add latest version of openssl.
 
 ### Usage
@@ -63,6 +64,7 @@
 - x86_64-unknown-freebsd
 - x86_64-unknown-netbsd
 - x86_64-unknown-illumos
+- x86_64-sun-solaris
 - riscv64gc-unknown-linux-gnu
 - powerpc64-unknown-linux-gnu
 - powerpc64le-unknown-linux-gnu
