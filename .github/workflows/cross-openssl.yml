@@ -178,4 +178,18 @@ jobs:
           cd cargo-prebuilt
           echo '[target.${{ matrix.target }}]' >> Cross.toml
           echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --no-default-features --features native,indexes --release --verbose --target ${{ matrix.target }}
+          cross build --no-default-features --features native,indexes --verbose --target ${{ matrix.target }}
+      - name: REMOVE!
+        run: |
+          git clone https://github.com/cross-rs/cross.git
+          cd cross
+          echo '[target.${{ matrix.target }}]' >> Cross.toml
+          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
+          cross build --verbose --target ${{ matrix.target }}
+      - name: REMOVE!
+        run: |
+          git clone https://github.com/AndrewGaspar/cargo-mpirun.git
+          cd cargo-mpirun
+          echo '[target.${{ matrix.target }}]' >> Cross.toml
+          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
+          cross build --verbose --target ${{ matrix.target }}
