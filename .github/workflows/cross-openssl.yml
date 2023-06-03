@@ -93,48 +93,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./cross-openssl
         run: echo "OPENSSL_VERSION=$(gh release view -R openssl/openssl --json tagName --jq '.tagName')" >> $GITHUB_ENV
-      - name: Cache
-        uses: actions/cache@v3
-        id: cache
-        with:
-          path: |
-            cross-openssl/openssl
-          key: ${{ matrix.target }}-${{ env.OPENSSL_VERSION }}-${{ secrets.CACHE_BUST }}
       - name: Download openssl
-        if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
         run: curl --retry 3 -fsSL https://www.openssl.org/source/${{ env.OPENSSL_VERSION }}.tar.gz -o openssl.tar.gz
       - name: Move openssl
-        if: ${{ !steps.cache.outputs.cache-hit }}
         working-directory: ./cross-openssl
         run: |
           mkdir openssl
           tar -xzvf openssl.tar.gz -C openssl --strip-components=1
-      # - name: Build openssl
-      #   if: ${{ !steps.cache.outputs.cache-hit }}
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: ./cross-openssl
-      #     file: ./cross-openssl/Dockerfile.openssl
-      #     pull: true
-      #     push: false
-      #     load: true
-      #     tags: openssl-built-deb
-      #     build-args: |
-      #       TARGET=${{ matrix.target }}
-      #       BUILD_COMBO=${{ matrix.build_combo }}
-      #     platforms: linux/amd64
-      #     builder: ${{ steps.buildx.outputs.name }}
-      # - name: Extract openssl.deb
-      #   if: ${{ !steps.cache.outputs.cache-hit }}
-      #   working-directory: ./cross-openssl
-      #   run: docker run --rm --pull=never --mount type=bind,src="$(pwd)",dst=/extract openssl-built-deb cp /openssldeb/openssl.deb /extract/openssl.deb
-      # - name: Artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: openssl-${{ matrix.target }}
-      #     path: |
-      #       cross-openssl/openssl.deb
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
@@ -145,7 +111,6 @@ jobs:
           file: ./cross-openssl/Dockerfile
           pull: true
           push: ${{ github.event_name != 'pull_request' }}
-          load: true #TODO: Remove!
           tags: ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}
           labels: |
             tech.harmless.cargo-prebuilt.name="cross-openssl"
@@ -161,48 +126,3 @@ jobs:
             BUILD_COMBO=${{ matrix.build_combo }}
           platforms: linux/amd64
           builder: ${{ steps.buildx.outputs.name }}
-      #TODO: Remove!
-      - name: Install cargo-prebuilt
-        uses: cargo-prebuilt/cargo-prebuilt-action@v1
-        with:
-          tools: cross
-      - name: REMOVE!
-        run: |
-          git clone https://github.com/cargo-prebuilt/cargo-prebuilt.git
-          cd cargo-prebuilt
-          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          echo '[target.${{ matrix.target }}]' >> Cross.toml
-          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --no-default-features --features native,indexes --verbose --target ${{ matrix.target }} || true
-      - name: REMOVE!
-        run: |
-          git clone https://github.com/cross-rs/cross.git
-          cd cross
-          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          echo '[target.${{ matrix.target }}]' >> Cross.toml
-          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --verbose --target ${{ matrix.target }} || true
-      - name: REMOVE!
-        run: |
-          git clone https://github.com/AndrewGaspar/cargo-mpirun.git
-          cd cargo-mpirun
-          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          echo '[target.${{ matrix.target }}]' >> Cross.toml
-          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --verbose --target ${{ matrix.target }} || true
-      - name: REMOVE!
-        run: |
-          git clone https://github.com/JanLikar/cargo-clone.git
-          cd cargo-clone
-          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          echo '[target.${{ matrix.target }}]' >> Cross.toml
-          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --verbose --target ${{ matrix.target }} || true
-      - name: REMOVE!
-        run: |
-          git clone https://github.com/pksunkara/cargo-workspaces.git
-          cd cargo-workspaces
-          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          echo '[target.${{ matrix.target }}]' >> Cross.toml
-          echo 'image = "ghcr.io/cargo-prebuilt/cross-openssl:${{ matrix.target }}"' >> Cross.toml
-          cross build --verbose --target ${{ matrix.target }} || true

@@ -6,8 +6,6 @@ ARG BUILD_COMBO
 ENV OPENSSL_INCLUDE_DIR=$CROSS_SYSROOT/include
 ENV OPENSSL_LIB_DIR=$CROSS_SYSROOT/lib
 
-SHELL ["/bin/bash", "-c"]
-
 RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
     cd /openssl
 
@@ -30,5 +28,3 @@ RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
     make "-j$(nproc)" install_sw
     make "-j$(nproc)" install_ssldirs
 EOT
-
-SHELL ["/bin/sh", "-c"]
