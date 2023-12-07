@@ -3,7 +3,7 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET
 ARG TARGET
 ARG BUILD_COMBO
 
-SHELL ["/bin/bash"]
+SHELL ["/bin/bash", "-c"]
 
 ENV OPENSSL_DIR=$CROSS_SYSROOT
 
