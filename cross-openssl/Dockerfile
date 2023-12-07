@@ -3,10 +3,13 @@ FROM ghcr.io/cargo-prebuilt/cross-auditable:$TARGET
 ARG TARGET
 ARG BUILD_COMBO
 
-ENV OPENSSL_INCLUDE_DIR=$CROSS_SYSROOT/include
-ENV OPENSSL_LIB_DIR=$CROSS_SYSROOT/lib
+SHELL ["/bin/bash"]
+
+ENV OPENSSL_DIR=$CROSS_SYSROOT
 
 RUN --mount=type=bind,source=openssl,target=/openssl,rw <<EOT
+    set -euxo pipefail
+
     cd /openssl
 
     case "$CROSS_TOOLCHAIN_PREFIX" in
