@@ -64,7 +64,6 @@
 - x86_64-unknown-freebsd
 - x86_64-unknown-netbsd
 - x86_64-unknown-illumos
-- x86_64-sun-solaris
 - riscv64gc-unknown-linux-gnu
 - powerpc64-unknown-linux-gnu
 - powerpc64le-unknown-linux-gnu
@@ -83,5 +82,3 @@
 - mips-unknown-linux-musl
 - mipsel-unknown-linux-gnu
 - mipsel-unknown-linux-musl
-- x86_64-pc-windows-gnu
-- i686-pc-windows-gnu
