@@ -24,53 +24,38 @@ jobs:
           - target: x86_64-unknown-freebsd
           - target: x86_64-unknown-netbsd
           - target: x86_64-unknown-illumos
-          - target: x86_64-sun-solaris
           - target: riscv64gc-unknown-linux-gnu
           - target: powerpc64-unknown-linux-gnu
           - target: powerpc64le-unknown-linux-gnu
           - target: s390x-unknown-linux-gnu
-          - target: mips64-unknown-linux-gnuabi64
-          - target: mips64-unknown-linux-muslabi64
-          - target: mips64el-unknown-linux-gnuabi64
-          - target: mips64el-unknown-linux-muslabi64
-          - target: i686-unknown-linux-gnu
-          - target: i686-unknown-linux-musl
-          - target: i686-unknown-freebsd
           - target: armv7-unknown-linux-gnueabihf
           - target: armv7-unknown-linux-musleabihf
-          - target: powerpc-unknown-linux-gnu
-          - target: mips-unknown-linux-gnu
-          - target: mips-unknown-linux-musl
-          - target: mipsel-unknown-linux-gnu
-          - target: mipsel-unknown-linux-musl
-          - target: x86_64-pc-windows-gnu
-          - target: i686-pc-windows-gnu
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Docker Setup Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Docker Login
         if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Download cargo-auditable
-        uses: cargo-prebuilt/cargo-prebuilt-action@v1
+        uses: cargo-prebuilt/cargo-prebuilt-action@v3
         with:
-          tools: cargo-auditable
-          tools-target: x86_64-unknown-linux-musl
-          tools-path: ${{ github.workspace }}/cross-auditable/resources
+          pkgs: cargo-auditable
+          target: x86_64-unknown-linux-musl
+          path: ${{ github.workspace }}/cross-auditable/resources
       - name: Vars
         run: |
           echo "BUILD_DATE=$(date --utc)" >> $GITHUB_ENV
       - name: Build and push Docker images
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ./cross-auditable
           file: ./cross-auditable/Dockerfile
