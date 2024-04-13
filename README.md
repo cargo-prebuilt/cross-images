@@ -1,5 +1,8 @@
 # cross-images
 
+Cross images is now unmaintained in favor of
+[ink-cross-images](https://github.com/cargo-prebuilt/ink-cross-images).
+
 ## cross-auditable
 
 ### Changed
