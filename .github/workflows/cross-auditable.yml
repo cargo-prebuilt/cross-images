@@ -46,7 +46,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Download cargo-auditable
-        uses: cargo-prebuilt/cargo-prebuilt-action@v3
+        uses: cargo-prebuilt/cargo-prebuilt-action@v4
         with:
           pkgs: cargo-auditable
           target: x86_64-unknown-linux-musl
